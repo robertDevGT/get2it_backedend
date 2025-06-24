@@ -1,0 +1,35 @@
+{
+  "name": "get2it",
+  "version": "1.0.0",
+  "description": "API Resful Get2It NodeJs Express Sequelize",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertDevGT/get2it_backedend.git"
+  },
+  "author": "Roberto Santizo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robertDevGT/get2it_backedend/issues"
+  },
+  "homepage": "https://github.com/robertDevGT/get2it_backedend#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "pg": "^8.16.2",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "nodemon": "^3.1.10",
+    "sequelize-cli": "^6.6.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
