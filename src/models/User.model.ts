@@ -1,6 +1,6 @@
 import { Table, Column, Model, Default } from "sequelize-typescript";
 
-interface IUser {
+export interface IUser {
     name: string;
     email: string;
     password: string;

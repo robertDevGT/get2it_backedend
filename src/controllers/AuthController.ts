@@ -115,4 +115,8 @@ export class AuthController {
             res.status(500).json({ error: 'Hubo un error' });
         }
     }
+
+    static async user(req: Request, res: Response) {
+        res.send(req.user);
+    }
 }

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from "express-validator";
 import { AuthController } from '../controllers/AuthController';
 import { handleInputErrors } from '../middlewares/validation';
+import { authenticate } from '../middlewares/auth';
 
 const router = Router();
 
@@ -30,6 +31,11 @@ router.post('/login',
     body('password').notEmpty().withMessage('La contraseña es requerida'),
     handleInputErrors,
     AuthController.login
+)
+
+router.get('/user',
+    authenticate,
+    AuthController.user
 )
 
 
