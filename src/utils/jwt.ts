@@ -10,7 +10,7 @@ export const generateJWT = (user: User) => {
         email: user.email
     }
     const token = jwt.sign(data, process.env.JWT_SECRET, {
-        expiresIn: '6m'
+        expiresIn: '180d'
     });
     return token;
 }

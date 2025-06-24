@@ -47,7 +47,7 @@ export class AuthController {
             const token = await Token.findOne({ where: { token: req.body.token } });
 
             if (!token) {
-                res.status(401).send('Token no válido');
+                res.status(401).json({ error: 'Token no válido' });
                 return;
             }
 
@@ -58,7 +58,7 @@ export class AuthController {
 
             if (difMins > 10) {
                 await token.destroy();
-                res.status(401).send('Token no válido');
+                res.status(401).json({ error: 'Token no válido' });
                 return;
             }
 
