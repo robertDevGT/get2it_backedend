@@ -28,7 +28,7 @@ export class AuthController {
             token.expiresAt = now;
 
             await token.save();
-            
+
             AuthEmail.sendConfirmationEmail({
                 email: user.email,
                 name: user.name,
@@ -38,6 +38,36 @@ export class AuthController {
             res.send('Cuenta Creada Correctamente, revisa tu Email para confirmarla');
         } catch (error) {
             res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static async confirmAccount(req: Request, res: Response) {
+        try {
+            const token = await Token.findOne({ where: { token: req.body.token } });
+
+            if (!token) {
+                res.status(401).send('Token no válido');
+                return;
+            }
+
+            const expiresAt = token.expiresAt;
+            const now = new Date();
+            const difMs = now.getTime() - expiresAt.getTime();
+            const difMins = Math.floor(difMs / 1000 / 60);
+
+            if (difMins > 10) {
+                await token.destroy();
+                res.status(401).send('Token no válido');
+                return;
+            }
+
+            const user = await User.findByPk(token.userId);
+            user.confirmed = true;
+            
+            await Promise.allSettled([user.save(),token.destroy()]);
+            res.send('Cuenta confirmada correctamente');
+        } catch (error) {
+            res.status(500).send({ error: 'Hubo un error' });
         }
     }
 }
