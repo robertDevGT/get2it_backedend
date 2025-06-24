@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
-import { hashPassword } from "../utils/auth";
+import { checkPassword, hashPassword } from "../utils/auth";
 import User from "../models/User.model";
 import Token from "../models/Token.model";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
+import { generateJWT } from "../utils/jwt";
 
 export class AuthController {
     static createAccount = async (req: Request, res: Response) => {
@@ -63,11 +64,55 @@ export class AuthController {
 
             const user = await User.findByPk(token.userId);
             user.confirmed = true;
-            
-            await Promise.allSettled([user.save(),token.destroy()]);
+
+            await Promise.allSettled([user.save(), token.destroy()]);
             res.send('Cuenta confirmada correctamente');
         } catch (error) {
             res.status(500).send({ error: 'Hubo un error' });
+        }
+    }
+
+    static async login(req: Request, res: Response) {
+        try {
+            const { password, email } = req.body;
+
+            const user = await User.findOne({ where: { email: email } });
+
+            if (!user) {
+                res.status(404).send('Usuario no encontrado');
+                return;
+            }
+
+            if (!user.confirmed) {
+                const token = await Token.create({ token: generateToken(), userId: user.id });
+                const now = new Date();
+                now.setMinutes(now.getMinutes() + 10);
+                token.expiresAt = now;
+                await token.save();
+
+                AuthEmail.sendConfirmationEmail({
+                    email: user.email,
+                    name: user.name,
+                    token: token.token
+                });
+
+                const error = new Error('La cuenta no ha sido confirmada, hemos enviado un email de confirmación');
+                res.status(401).json({ error: error.message });
+                return;
+            }
+
+            const isPasswordCorrect = await checkPassword(password, user.password);
+
+            if (!isPasswordCorrect) {
+                const error = new Error('Credenciales Incorrectas');
+                res.status(401).json({ error: error.message });
+                return;
+            }
+
+            const token = generateJWT(user);
+            res.send(token);
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
         }
     }
 }
