@@ -4,7 +4,8 @@
   "description": "API Resful Get2It NodeJs Express Sequelize",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts"
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev:api": "nodemon --exec ts-node src/index.ts --api"
   },
   "repository": {
     "type": "git",

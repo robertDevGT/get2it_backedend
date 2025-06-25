@@ -1,20 +1,32 @@
-import { Table, Column, Model, DataType, HasMany } from "sequelize-typescript";
+import { Table, Column, Model, HasMany, BelongsTo, ForeignKey } from "sequelize-typescript";
 import Task from "./Task.model";
+import User from "./User.model";
+
+interface IProject {
+    projectName: string;
+    description: string;
+    manager: number;
+    tasks: Task[];
+}
 
 @Table({
     tableName: 'projects'
 })
 
-class Project extends Model {
-    @Column({
-        type: DataType.STRING
-    })
-    projectName: string
+class Project extends Model<IProject> {
+    @Column
+    declare projectName: string
 
-    @Column({
-        type: DataType.STRING
-    })
-    description: string;
+    @Column
+    declare description: string;
+
+
+    @ForeignKey(() => User)
+    @Column
+    declare manager: number;
+
+    @BelongsTo(() => User, { constraints: true })
+    user: User;
 
     @HasMany(() => Task)
     tasks: Task[]
