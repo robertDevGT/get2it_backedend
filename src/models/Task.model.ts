@@ -1,11 +1,13 @@
-import { Table, Column, Model, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement, Default, DataType } from "sequelize-typescript";
+import { Table, Column, Model, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement, DataType, HasMany } from "sequelize-typescript";
 import Project from "./Project.model";
+import Note from "./Note.model";
 
-interface ITask {
+export interface ITask {
     id: number;
     description: string;
     status: string;
     projectId: number;
+    notes: Note[];
 }
 
 const taskStatus = {
@@ -21,7 +23,7 @@ const taskStatus = {
     tableName: 'tasks'
 })
 
-class Task extends Model<ITask>{
+class Task extends Model<ITask> {
     @PrimaryKey
     @AutoIncrement
     @Column
@@ -43,8 +45,11 @@ class Task extends Model<ITask>{
     })
     declare projectId: number;
 
-    @BelongsTo(() => Project, { as: 'project', constraints: true } )
+    @BelongsTo(() => Project, { as: 'project', constraints: true })
     project: Project;
+
+    @HasMany(() => Note, {as: 'notes', constraints: true})
+    notes: Note[]
 }
 
 export default Task;
