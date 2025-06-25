@@ -2,14 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 import User, { IUser } from "../models/User.model";
 
-type UserType = Pick<IUser, 'name' | 'email'> & {
-    id: number;
-}
-
 declare global {
     namespace Express {
         interface Request {
-            user?: UserType
+            user?: IUser
         }
     }
 }
@@ -30,11 +26,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         if (typeof decoded === 'object' && decoded.id) {
             const user = await User.findByPk(decoded.id, { attributes: ['id', 'name', 'email'] });
             if (user) {
-                req.user = {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name
-                };
+                req.user = user;
                 next();
             } else {
                 res.status(500).json({ error: 'Token no válido' });

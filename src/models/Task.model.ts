@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Table, Column, Model, DataType, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement } from "sequelize-typescript";
 import Project from "./Project.model";
 
 @Table({
@@ -6,10 +6,13 @@ import Project from "./Project.model";
 })
 
 class Task extends Model {
-    @Column({
-        type: DataType.STRING
-    })
-    description: string
+    @PrimaryKey
+    @AutoIncrement
+    @Column
+    declare id: number;
+
+    @Column
+    declare description: string
 
     @ForeignKey(() => Project)
     @Column({

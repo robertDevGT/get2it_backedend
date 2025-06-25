@@ -1,7 +1,8 @@
-import { Table, Column, Model, Default, ForeignKey, HasMany } from "sequelize-typescript";
+import { Table, Column, Model, Default, HasMany, AutoIncrement, PrimaryKey } from "sequelize-typescript";
 import Project from "./Project.model";
 
 export interface IUser {
+    id: number;
     name: string;
     email: string;
     password: string;
@@ -14,6 +15,11 @@ export interface IUser {
 })
 
 class User extends Model<IUser> {
+    @AutoIncrement
+    @PrimaryKey
+    @Column
+    declare id: number;
+
     @Column
     declare name: string;
 

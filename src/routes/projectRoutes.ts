@@ -19,5 +19,21 @@ router.get('/',
     ProjectController.getAllProjects
 )
 
+router.get('/:projectId',
+    ProjectController.getProjectById
+)
+
+router.patch('/:projectId',
+    body('projectName').notEmpty().withMessage('El nombre del proyecto es requerido'),
+    body('description').notEmpty().withMessage('La descripción del proyecto es requerida'),
+    handleInputErrors,
+    ProjectController.updateProject
+)
+
+router.delete('/:projectId',
+    handleInputErrors,
+    ProjectController.deleteProject
+)
+
 
 export default router

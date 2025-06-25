@@ -1,11 +1,12 @@
-import { Table, Column, Model, HasMany, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Table, Column, Model, HasMany, BelongsTo, ForeignKey, AutoIncrement, PrimaryKey } from "sequelize-typescript";
 import Task from "./Task.model";
 import User from "./User.model";
 
-interface IProject {
+export interface IProject {
+    id: number;
     projectName: string;
     description: string;
-    manager: number;
+    managerId: number;
     tasks: Task[];
 }
 
@@ -14,6 +15,11 @@ interface IProject {
 })
 
 class Project extends Model<IProject> {
+    @PrimaryKey
+    @AutoIncrement
+    @Column
+    declare id: number;
+
     @Column
     declare projectName: string
 
@@ -23,10 +29,10 @@ class Project extends Model<IProject> {
 
     @ForeignKey(() => User)
     @Column
-    declare manager: number;
+    declare managerId: number;
 
     @BelongsTo(() => User, { constraints: true })
-    user: User;
+    manager: User;
 
     @HasMany(() => Task)
     tasks: Task[]
