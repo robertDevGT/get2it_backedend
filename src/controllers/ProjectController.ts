@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Project from "../models/Project.model";
 import User from "../models/User.model";
-import { checkPassword } from "../utils/auth";
+import Task from "../models/Task.model";
 
 export class ProjectController {
     static async crateProject(req: Request, res: Response) {
@@ -30,7 +30,13 @@ export class ProjectController {
     static async getProjectById(req: Request, res: Response) {
         try {
             const { projectId } = req.params;
-            const project = await Project.findByPk(projectId, { attributes: ['id', 'projectName', 'description', 'managerId'], include: { model: User, as: 'manager', attributes: ['name', 'email'] } });
+            const project = await Project.findByPk(projectId, {
+                attributes: ['id', 'projectName', 'description', 'managerId'],
+                include: [
+                    { model: User, as: 'manager', attributes: ['name', 'email'] },
+                    { model: Task, as: 'tasks', attributes: ['id', 'description', 'status', 'createdAt'] }
+                ]
+            });
 
             if (!project) {
                 res.status(404).json({ error: 'Proyecto no Encontrado' });

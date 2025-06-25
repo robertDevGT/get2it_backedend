@@ -1,11 +1,27 @@
-import { Table, Column, Model, DataType, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement } from "sequelize-typescript";
+import { Table, Column, Model, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement, Default, DataType } from "sequelize-typescript";
 import Project from "./Project.model";
+
+interface ITask {
+    id: number;
+    description: string;
+    status: string;
+    projectId: number;
+}
+
+const taskStatus = {
+    PENDING: 'pending',
+    ON_HOLD: 'onHold',
+    IN_PROGRESS: 'InProgress',
+    UNDER_REVIEW: 'underReview',
+    COMPLETED: 'completed'
+} as const
+
 
 @Table({
     tableName: 'tasks'
 })
 
-class Task extends Model {
+class Task extends Model<ITask>{
     @PrimaryKey
     @AutoIncrement
     @Column
@@ -14,14 +30,20 @@ class Task extends Model {
     @Column
     declare description: string
 
+    @Column({
+        type: DataType.ENUM(...Object.values(taskStatus)),
+        allowNull: false,
+        defaultValue: taskStatus.PENDING
+    })
+    declare status: string;
+
     @ForeignKey(() => Project)
     @Column({
-        type: DataType.INTEGER,
         allowNull: false
     })
-    projectId: number;
+    declare projectId: number;
 
-    @BelongsTo(() => Project, { constraints: true })
+    @BelongsTo(() => Project, { as: 'project', constraints: true } )
     project: Project;
 }
 
