@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Project from "../models/Project.model";
 import Task from "../models/Task.model";
+import Note from "../models/Note.model";
+import User from "../models/User.model";
 
 export class TaskController {
     static async createTask(req: Request, res: Response) {
@@ -29,7 +31,14 @@ export class TaskController {
     static async getTaskById(req: Request, res: Response) {
         const { taskId } = req.params;
         try {
-            const task = await Task.findByPk(taskId, { attributes: ['id', 'description', 'status', 'createdAt'] });
+            const task = await Task.findByPk(taskId,
+                {
+                    attributes: ['id', 'description', 'status', 'createdAt'],
+                    include: {
+                        model: Note, as: 'notes', attributes: ['id', 'description', 'createdAt'],
+                        include: [{ model: User, as: 'author', attributes: ['id', 'name'] }]
+                    }
+                });
 
             if (!task) {
                 res.status(404).send('Tarea no Encontrada');

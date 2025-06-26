@@ -1,12 +1,14 @@
 import { Table, Column, Model, BelongsTo, ForeignKey, PrimaryKey, AutoIncrement, DataType, HasMany } from "sequelize-typescript";
 import Project from "./Project.model";
 import Note from "./Note.model";
+import User from "./User.model";
 
 export interface ITask {
     id: number;
     description: string;
     status: string;
     projectId: number;
+    assigneeId: number;
     notes: Note[];
 }
 
@@ -45,10 +47,19 @@ class Task extends Model<ITask> {
     })
     declare projectId: number;
 
+    @ForeignKey(() => User)
+    @Column({
+        allowNull: true
+    })
+    declare assigneeId: number;
+
+    @BelongsTo(() => User, { as: 'assignee', constraints: true })
+    assignee: User;
+
     @BelongsTo(() => Project, { as: 'project', constraints: true })
     project: Project;
 
-    @HasMany(() => Note, {as: 'notes', constraints: true})
+    @HasMany(() => Note, { as: 'notes', constraints: true })
     notes: Note[]
 }
 

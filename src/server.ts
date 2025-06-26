@@ -6,10 +6,14 @@ import projectRoutes from "./routes/projectRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import noteRoutes from "./routes/noteRoutes";
 import cors from "cors";
+import path from "path";
 
 connectDB();
 
 const app = express();
+
+const uploadsPath = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 app.use(cors(corsConfig));
 app.use(express.json());

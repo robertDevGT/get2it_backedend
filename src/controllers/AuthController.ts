@@ -1,10 +1,13 @@
 import type { Request, Response } from "express";
 import { checkPassword, hashPassword } from "../utils/auth";
-import User from "../models/User.model";
-import Token from "../models/Token.model";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
 import { generateJWT } from "../utils/jwt";
+import fs from "fs";
+import path from "path";
+import sharp from 'sharp';
+import User from "../models/User.model";
+import Token from "../models/Token.model";
 
 export class AuthController {
     static createAccount = async (req: Request, res: Response) => {
@@ -118,5 +121,25 @@ export class AuthController {
 
     static async user(req: Request, res: Response) {
         res.send(req.user);
+    }
+
+    static async updateProfileImg(req: Request, res: Response) {
+        try {
+            const user = await User.findByPk(req.user.id);
+            const filename = `user-${req.user.id}.png`;
+            const outputPath = path.join(__dirname, '..', 'uploads', filename);
+            await sharp(req.file.buffer)
+                .resize(300, 300, {
+                    fit: 'cover',
+                    position: 'center'
+                }).png().toFile(outputPath);
+
+            user.profileImg = filename;
+            await user.save();
+
+            res.send('Imagen Actualizada Correctamente');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
     }
 }

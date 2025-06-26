@@ -19,7 +19,7 @@ export class ProjectController {
 
     static async getAllProjects(req: Request, res: Response) {
         try {
-            const projects = await Project.findAll({ where: { managerId: req.user.id }, attributes: ['id', 'projectName', 'description'] });
+            const projects = await Project.findAll({ where: { managerId: req.user.id }, attributes: ['id', 'projectName', 'description', 'createdAt'] });
             res.status(200).json(projects);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -34,7 +34,7 @@ export class ProjectController {
                 attributes: ['id', 'projectName', 'description', 'managerId'],
                 include: [
                     { model: User, as: 'manager', attributes: ['name', 'email'] },
-                    { model: Task, as: 'tasks', attributes: ['id', 'description', 'status', 'createdAt'] }
+                    { model: Task, as: 'tasks', attributes: ['id', 'description', 'status', 'createdAt'], include: [{ model: User, as: 'assignee', attributes: ['id', 'name', 'profileImg'] }] }
                 ]
             });
 

@@ -3,6 +3,9 @@ import { body } from "express-validator";
 import { AuthController } from '../controllers/AuthController';
 import { handleInputErrors } from '../middlewares/validation';
 import { authenticate } from '../middlewares/auth';
+import { imageExists } from '../middlewares/img';
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = Router();
 
@@ -33,10 +36,19 @@ router.post('/login',
     AuthController.login
 )
 
+router.use(authenticate);
+
 router.get('/user',
-    authenticate,
     AuthController.user
 )
+
+router.patch('/user',
+    upload.single('img'),
+    imageExists,
+    handleInputErrors,
+    AuthController.updateProfileImg
+)
+
 
 
 export default router;

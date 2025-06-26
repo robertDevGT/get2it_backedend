@@ -32,8 +32,8 @@ class Note extends Model<INote> {
     @Column
     declare userId: number;
 
-    @BelongsTo(() => User, { constraints: true })
-    user: User;
+    @BelongsTo(() => User, { as: 'author', constraints: true })
+    author: User;
 
     @BelongsTo(() => Task, { constraints: true })
     task: Task;
