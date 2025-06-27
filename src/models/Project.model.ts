@@ -1,6 +1,7 @@
 import { Table, Column, Model, HasMany, BelongsTo, ForeignKey, AutoIncrement, PrimaryKey } from "sequelize-typescript";
 import Task from "./Task.model";
 import User from "./User.model";
+import ProjectUser from "./ProjectUser.model";
 
 export interface IProject {
     id: number;
@@ -8,6 +9,7 @@ export interface IProject {
     description: string;
     managerId: number;
     tasks: Task[];
+    team: ProjectUser[];
 }
 
 @Table({
@@ -36,6 +38,9 @@ class Project extends Model<IProject> {
 
     @HasMany(() => Task)
     tasks: Task[]
+
+    @HasMany(() => ProjectUser)
+    team: ProjectUser[]
 }
 
 export default Project;

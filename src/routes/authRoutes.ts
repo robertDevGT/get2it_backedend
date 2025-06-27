@@ -36,13 +36,13 @@ router.post('/login',
     AuthController.login
 )
 
-router.use(authenticate);
-
 router.get('/user',
+    authenticate,
     AuthController.user
 )
 
 router.patch('/user',
+    authenticate,
     upload.single('img'),
     imageExists,
     handleInputErrors,

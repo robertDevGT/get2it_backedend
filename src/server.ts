@@ -5,6 +5,7 @@ import AuthRoutes from "./routes/authRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import noteRoutes from "./routes/noteRoutes";
+import collaboratorsRoutes from "./routes/collaboratorsRoutes";
 import cors from "cors";
 import path from "path";
 
@@ -22,5 +23,6 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/collaborators', collaboratorsRoutes);
 
 export default app;

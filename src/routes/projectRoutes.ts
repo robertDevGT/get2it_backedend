@@ -23,6 +23,14 @@ router.get('/:projectId',
     ProjectController.getProjectById
 )
 
+router.get('/:projectId/team',
+    ProjectController.getProjectTeam
+)
+
+router.get('/:projectId/tasks',
+    ProjectController.getProjectTasks
+)
+
 router.patch('/:projectId',
     body('projectName').notEmpty().withMessage('El nombre del proyecto es requerido'),
     body('description').notEmpty().withMessage('La descripción del proyecto es requerida'),
