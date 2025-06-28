@@ -35,6 +35,9 @@ router.delete('/task/:taskId/:projectId',
     TaskController.deleteTask
 )
 
+router.patch('/:taskId/assign/:userId',
+    TaskController.assignEmployeeToTask
+)   
 
 
 export default router;

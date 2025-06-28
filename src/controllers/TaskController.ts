@@ -3,6 +3,7 @@ import Project from "../models/Project.model";
 import Task from "../models/Task.model";
 import Note from "../models/Note.model";
 import User from "../models/User.model";
+import ProjectUser from "../models/ProjectUser.model";
 
 export class TaskController {
     static async createTask(req: Request, res: Response) {
@@ -34,10 +35,9 @@ export class TaskController {
             const task = await Task.findByPk(taskId,
                 {
                     attributes: ['id', 'description', 'status', 'createdAt'],
-                    include: {
-                        model: Note, as: 'notes', attributes: ['id', 'description', 'createdAt'],
-                        include: [{ model: User, as: 'author', attributes: ['id', 'name'] }]
-                    }
+                    include: [{
+                        model: Note, as: 'notes', attributes: ['id', 'description', 'createdAt'], include: [{ model: User, as: 'author', attributes: ['id', 'name', 'profileImg'] }],
+                    }, { model: User, as: 'assignee', attributes: ['id', 'name', 'email', 'profileImg'] }],
                 });
 
             if (!task) {
@@ -120,6 +120,38 @@ export class TaskController {
             res.send('Tarea Eliminada Correctamente');
         } catch (error) {
             res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async assignEmployeeToTask(req: Request, res: Response) {
+        try {
+            const { taskId, userId } = req.params;
+            const task = await Task.findByPk(taskId);
+            const user = await User.findByPk(userId);
+
+            if (!task) {
+                res.status(404).send('Tarea No Encontrada');
+                return;
+            }
+
+            if (!user) {
+                res.status(404).send('Usuario No Encontrado');
+                return;
+            }
+
+            const assign = await ProjectUser.findOne({ where: { projectId: task.projectId, userId: user.id } });
+
+            if (!assign) {
+                res.status(404).send('El Usuario no es Colaborador');
+                return;
+            }
+
+            task.assigneeId = user.id;
+            task.save();
+
+            res.send('Asignado Correctamente');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
         }
     }
 }
