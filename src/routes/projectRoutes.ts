@@ -43,5 +43,10 @@ router.delete('/:projectId',
     ProjectController.deleteProject
 )
 
+router.get('/:projectId/check/:userId',
+
+    ProjectController.checkManagerRole
+)
+
 
 export default router

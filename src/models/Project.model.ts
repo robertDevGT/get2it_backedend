@@ -36,10 +36,14 @@ class Project extends Model<IProject> {
     @BelongsTo(() => User, { constraints: true })
     manager: User;
 
-    @HasMany(() => Task)
+    @HasMany(() => Task, {
+        onDelete: 'CASCADE'
+    })
     tasks: Task[]
 
-    @HasMany(() => ProjectUser)
+    @HasMany(() => ProjectUser,{
+        onDelete: 'CASCADE'
+    })
     team: ProjectUser[]
 }
 

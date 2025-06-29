@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Model, Op, Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import Project from "../models/Project.model";
 import User from "../models/User.model";
 import Task from "../models/Task.model";
@@ -39,6 +39,7 @@ export class ProjectController {
                     ]
                 },
                 attributes: ['id', 'projectName', 'description', 'createdAt', 'managerId'],
+                order:[['id','ASC']]
             });
             res.status(200).json(projects);
         } catch (error) {
@@ -156,4 +157,34 @@ export class ProjectController {
             res.status(500).json({ error: 'Hubo un error' });
         }
     }
+
+    static async checkManagerRole(req: Request, res: Response) {
+        try {
+            const { projectId, userId } = req.params;
+
+            const project = await Project.findByPk(projectId);
+            const user = await User.findByPk(userId);
+
+            if (!project) {
+                res.status(404).send('Proyecto no Encontrado');
+                return;
+            }
+
+            if (!user) {
+                res.status(404).send('Usuario No Encontrado');
+            }
+
+            const permission = await ProjectUser.findOne({ where: { projectId: project.id, userId: user.id, role: 1 } });
+
+            if (permission) {
+                res.send(true);
+            } else {
+                res.send(false);
+            }
+
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
 }

@@ -35,7 +35,7 @@ class Note extends Model<INote> {
     @BelongsTo(() => User, { as: 'author', constraints: true })
     author: User;
 
-    @BelongsTo(() => Task, { constraints: true })
+    @BelongsTo(() => Task, { constraints: true, onDelete:'CASCADE' })
     task: Task;
 }
 

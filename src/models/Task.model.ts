@@ -59,7 +59,7 @@ class Task extends Model<ITask> {
     @BelongsTo(() => Project, { as: 'project', constraints: true })
     project: Project;
 
-    @HasMany(() => Note, { as: 'notes', constraints: true })
+    @HasMany(() => Note, { as: 'notes', constraints: true, onDelete: 'CASCADE' })
     notes: Note[]
 }
 

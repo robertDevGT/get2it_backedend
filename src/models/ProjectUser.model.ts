@@ -37,7 +37,7 @@ class ProjectUser extends Model<IProjectUser> {
     @BelongsTo(() => User, { as: 'member', constraints: true })
     user: User;
 
-    @BelongsTo(() => Project, { as: 'project', constraints: true })
+    @BelongsTo(() => Project, { as: 'project', constraints: true, onDelete:'CASCADE' })
     project: Project;
 
 }

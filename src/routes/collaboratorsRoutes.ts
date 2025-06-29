@@ -21,6 +21,10 @@ router.post('/:projectId/add',
     CollaboratorController.addCollaboratorToProject
 );
 
+router.delete('/:projectId/:userId',
+    handleInputErrors,
+    CollaboratorController.deleteCollaboratorFromProject
+);
 
 
 export default router;
