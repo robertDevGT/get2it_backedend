@@ -27,6 +27,10 @@ export class ProjectController {
 
     static async getAllProjects(req: Request, res: Response) {
         try {
+            const { projectName } = req.query;
+
+            const filter = projectName ? projectName : '';
+
             const projects = await Project.findAll({
                 where: {
                     [Op.or]: [
@@ -36,11 +40,15 @@ export class ProjectController {
                         WHERE "projectUsers"."projectId" = "Project"."id"
                         AND "projectUsers"."userId" = ${req.user.id}
                     )`)
-                    ]
+                    ],
+                    projectName: {
+                        [Op.iLike]: `%${filter}%`
+                    }
                 },
                 attributes: ['id', 'projectName', 'description', 'createdAt', 'managerId'],
                 order:[['id','ASC']]
             });
+            
             res.status(200).json(projects);
         } catch (error) {
             res.status(500).json({ error: error.message });
