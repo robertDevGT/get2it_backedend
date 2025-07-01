@@ -206,13 +206,12 @@ export class ProjectController {
                 return
             }
 
-            const collaborators = await ProjectUser.findAll({ where: { projectId: project.id }});
-
+            const collaborators = await ProjectUser.findAll({ where: { projectId: project.id } });
 
             const data = await Promise.all(
                 collaborators.map(async (member) => {
                     const tasksCompleted = await Task.count({
-                        where: { projectId: project.id, assigneeId: member.userId }
+                        where: { projectId: project.id, assigneeId: member.userId, status: 'completed' }
                     });
 
                     const user = await User.findByPk(member.userId);
