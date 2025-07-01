@@ -82,7 +82,7 @@ export class AuthController {
             const user = await User.findOne({ where: { email: email } });
 
             if (!user) {
-                res.status(404).send('Usuario no encontrado');
+                res.status(404).send({ error: 'Usuario no encontrado' });
                 return;
             }
 
