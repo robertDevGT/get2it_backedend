@@ -7,6 +7,7 @@ export interface IProjectUser {
     projectId: number;
     userId: number;
     role: number;
+    user: User;
 }
 
 @Table({

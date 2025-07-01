@@ -44,8 +44,11 @@ router.delete('/:projectId',
 )
 
 router.get('/:projectId/check/:userId',
-
     ProjectController.checkManagerRole
+)
+
+router.get('/:projectId/stadistics',
+    ProjectController.projectTeamStadistics
 )
 
 

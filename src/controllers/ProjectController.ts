@@ -46,9 +46,9 @@ export class ProjectController {
                     }
                 },
                 attributes: ['id', 'projectName', 'description', 'createdAt', 'managerId'],
-                order:[['id','ASC']]
+                order: [['id', 'ASC']]
             });
-            
+
             res.status(200).json(projects);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -190,6 +190,41 @@ export class ProjectController {
                 res.send(false);
             }
 
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static async projectTeamStadistics(req: Request, res: Response) {
+        try {
+            const { projectId } = req.params;
+
+            const project = await Project.findByPk(projectId);
+
+            if (!project) {
+                res.status(404).send('Proyecto no Encontrado');
+                return
+            }
+
+            const collaborators = await ProjectUser.findAll({ where: { projectId: project.id }});
+
+
+            const data = await Promise.all(
+                collaborators.map(async (member) => {
+                    const tasksCompleted = await Task.count({
+                        where: { projectId: project.id, assigneeId: member.userId }
+                    });
+
+                    const user = await User.findByPk(member.userId);
+
+                    return {
+                        name: user.name,
+                        tasksCompleted,
+                    };
+                })
+            );
+
+            res.json(data);
         } catch (error) {
             res.status(500).json({ error: 'Hubo un error' });
         }
