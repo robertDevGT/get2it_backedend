@@ -5,12 +5,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 const db = new Sequelize(process.env.DATABASE_URL, {
-    models: isProduction
-        ? [__dirname + '/../models/**/*.js']
-        : [__dirname + '/../models/**/*.ts']
+    models: [__dirname + '/../models/**/*']
 });
 
 async function connectDB() {
