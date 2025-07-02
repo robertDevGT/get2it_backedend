@@ -5,17 +5,21 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const db = new Sequelize(process.env.DATABASE_URL,{
-    models: [__dirname + '/../models/**/*.ts']
+const isProduction = process.env.NODE_ENV === 'production';
+
+const db = new Sequelize(process.env.DATABASE_URL, {
+    models: isProduction
+        ? [__dirname + '/../models/**/*.js']
+        : [__dirname + '/../models/**/*.ts']
 });
 
 async function connectDB() {
     try {
         await db.authenticate();
-        await db.sync({alter:true});
+        await db.sync({ alter: true });
         console.log(colors.green.bold('Conexión exitosa a la base de datos'));
     } catch (error) {
-        console.log(colors.red.bold('Hubo un error al conectar a la base de datos'));
+        console.log(colors.red.bold(`Hubo un error al conectar a la base de datos ${error.message}`));
         exit(1);
     }
 }
