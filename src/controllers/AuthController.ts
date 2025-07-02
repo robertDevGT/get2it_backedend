@@ -3,7 +3,6 @@ import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
 import { generateJWT } from "../utils/jwt";
-import fs from "fs";
 import path from "path";
 import sharp from 'sharp';
 import User from "../models/User.model";
@@ -138,6 +137,126 @@ export class AuthController {
             await user.save();
 
             res.send('Imagen Actualizada Correctamente');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static async forgotPassword(req: Request, res: Response) {
+        try {
+            const { email } = req.body;
+
+            const user = await User.findOne({ where: { email: email } });
+
+            if (!user) {
+                res.status(404).json({ error: 'Usuario no encontrado' });
+                return;
+            }
+
+            const token = await Token.create({ token: generateToken(), userId: user.id });
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + 10);
+            token.expiresAt = now;
+            await token.save();
+
+            AuthEmail.sendForgotPasswordEmail({
+                email: user.email,
+                name: user.name,
+                token: token.token
+            });
+
+            res.send('Te hemos enviado las instrucciones a tu email');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static async validateToken(req: Request, res: Response) {
+        try {
+            const token = await Token.findOne({ where: { token: req.body.token } });
+
+            if (!token) {
+                res.status(401).json({ error: 'Token no válido' });
+                return;
+            }
+
+            const expiresAt = token.expiresAt;
+            const now = new Date();
+            const difMs = now.getTime() - expiresAt.getTime();
+            const difMins = Math.floor(difMs / 1000 / 60);
+
+            if (difMins > 10) {
+                await token.destroy();
+                res.status(401).json({ error: 'Token no válido' });
+                return;
+            }
+
+            res.send('Token válido, define tu nueva contraseña');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static updatePasswordWithToken = async (req: Request, res: Response) => {
+        try {
+            const { password } = req.body;
+
+            const token = await Token.findOne({ where: { token: req.params.token } });
+
+            if (!token) {
+                res.status(401).json({ error: 'Token no válido' });
+                return;
+            }
+
+            const expiresAt = token.expiresAt;
+            const now = new Date();
+            const difMs = now.getTime() - expiresAt.getTime();
+            const difMins = Math.floor(difMs / 1000 / 60);
+
+            if (difMins > 10) {
+                await token.destroy();
+                res.status(401).json({ error: 'Token no válido' });
+                return;
+            }
+
+            const user = await User.findByPk(token.userId);
+            user.password = await hashPassword(password);
+
+
+            await Promise.allSettled([user.save(), token.destroy()]);
+
+            res.send('Contraseña actualizada correctamente');
+        } catch (error) {
+            res.status(500).json({ error: 'Hubo un error' });
+        }
+    }
+
+    static requestConfirmationCode = async (req: Request, res: Response) => {
+        try {
+            const { email } = req.body;
+
+            const user = await User.findOne({ where: { email } });
+
+            if (!user) {
+                res.status(404).json({ error: 'Usuario no encontrado' });
+                return;
+            }
+
+            if (!user.confirmed) {
+                const token = await Token.create({ token: generateToken(), userId: user.id });
+                const now = new Date();
+                now.setMinutes(now.getMinutes() + 10);
+                token.expiresAt = now;
+                await token.save();
+
+                AuthEmail.sendConfirmationEmail({
+                    name: user.name,
+                    token: token.token,
+                    email: user.email
+                });
+
+                res.send('Hemos enviado las instrucciones a tu email, revisalo');
+            }
         } catch (error) {
             res.status(500).json({ error: 'Hubo un error' });
         }

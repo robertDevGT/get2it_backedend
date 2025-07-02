@@ -1,7 +1,7 @@
 {
-  "name": "get2it",
+  "name": "getitdone",
   "version": "1.0.0",
-  "description": "API Resful Get2It NodeJs Express Sequelize",
+  "description": "API Resful GetItDone NodeJs Express Sequelize",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/robertDevGT/get2it_backedend.git"
+    "url": "git+https://github.com/robertdevgt/getitdone_backend"
   },
   "author": "Roberto Santizo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/robertDevGT/get2it_backedend/issues"
+    "url": "https://github.com/robertDevGT/getitdone_backedend/issues"
   },
-  "homepage": "https://github.com/robertDevGT/get2it_backedend#readme",
+  "homepage": "https://github.com/robertDevGT/getitdone_backedend#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "colors": "^1.4.0",

@@ -49,6 +49,37 @@ router.patch('/user',
     AuthController.updateProfileImg
 )
 
+router.post('/forgot-password',
+    body('email').isEmail().withMessage('Email no válido'),
+    handleInputErrors,
+    AuthController.forgotPassword
+)
+
+router.post('/validate-token',
+    body('token').notEmpty().withMessage('El token es requerido'),
+    handleInputErrors,
+    AuthController.validateToken
+)
+
+router.post('/update-password/:token',
+    body('password').isLength({ min: 8 }).withMessage('La contraseña es muy corta, minimo 8 caracteres'),
+    body('password_confirmation').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error("Las contraseñas deben de coincidir");
+        }
+        return true;
+    }),
+    handleInputErrors,
+    AuthController.updatePasswordWithToken
+)
+
+router.post('/request-code',
+    body('email')
+        .isEmail().withMessage('Email no válido'),
+    handleInputErrors,
+    AuthController.requestConfirmationCode
+)
+
 
 
 export default router;
